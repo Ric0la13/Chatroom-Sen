@@ -26,7 +26,11 @@ public class ChatView extends VerticalLayout {
         TextField inputField = new TextField();
         inputField.setWidthFull();
         Button sendButton = new Button(VaadinIcon.PAPERPLANE_O.create(), buttonClickEvent -> {
-            Span message = new Span(inputField.getValue());
+            String value = inputField.getValue();
+            if (value.isBlank()) {
+                return;
+            }
+            Span message = new Span(value);
             chatContent.add(message);
             message.scrollIntoView();
             inputField.clear();

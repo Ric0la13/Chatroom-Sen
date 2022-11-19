@@ -27,6 +27,7 @@ public class ChatView extends VerticalLayout {
         Button sendButton = new Button(VaadinIcon.PAPERPLANE_O.create(), buttonClickEvent -> {
             Span message = new Span(inputField.getValue());
             chatContent.add(message);
+            inputField.clear();
         });
         sendButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         HorizontalLayout sendContainer = new HorizontalLayout(inputField, sendButton);

@@ -1,6 +1,7 @@
 package com.example.application.views.chat;
 
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
@@ -29,6 +30,7 @@ public class ChatView extends VerticalLayout {
             chatContent.add(message);
             inputField.clear();
         });
+        inputField.addKeyDownListener(Key.ENTER, keyDownEvent -> sendButton.click());
         sendButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         HorizontalLayout sendContainer = new HorizontalLayout(inputField, sendButton);
         sendContainer.setWidthFull();

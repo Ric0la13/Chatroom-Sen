@@ -15,7 +15,6 @@ import com.vaadin.flow.router.Route;
 
 @PageTitle("Chat")
 @Route(value = "chat", layout = MainLayout.class)
-
 public class ChatView extends VerticalLayout {
 
     public ChatView() {

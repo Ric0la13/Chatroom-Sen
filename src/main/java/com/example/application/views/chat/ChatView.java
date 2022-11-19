@@ -3,6 +3,7 @@ package com.example.application.views.chat;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -17,17 +18,21 @@ import com.vaadin.flow.router.Route;
 public class ChatView extends VerticalLayout {
 
     public ChatView() {
-        Scroller chatContent = new Scroller();
-        chatContent.setSizeFull();
+        VerticalLayout chatContent = new VerticalLayout();
+        Scroller scroller = new Scroller(chatContent);
+        scroller.setSizeFull();
 
         TextField inputField = new TextField();
         inputField.setWidthFull();
-        Button sendButton = new Button(VaadinIcon.PAPERPLANE_O.create());
+        Button sendButton = new Button(VaadinIcon.PAPERPLANE_O.create(), buttonClickEvent -> {
+            Span message = new Span(inputField.getValue());
+            chatContent.add(message);
+        });
         sendButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         HorizontalLayout sendContainer = new HorizontalLayout(inputField, sendButton);
         sendContainer.setWidthFull();
 
-        add(chatContent, sendContainer);
+        add(scroller, sendContainer);
         setSizeFull();
     }
 }

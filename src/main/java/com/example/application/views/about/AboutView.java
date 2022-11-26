@@ -8,7 +8,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import javax.annotation.security.PermitAll;
+
 @PageTitle("About")
+@PermitAll
 @Route(value = "about", layout = MainLayout.class)
 public class AboutView extends VerticalLayout {
 

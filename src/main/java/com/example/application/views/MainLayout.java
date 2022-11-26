@@ -3,11 +3,13 @@ package com.example.application.views;
 
 import com.example.application.components.appnav.AppNav;
 import com.example.application.components.appnav.AppNavItem;
+import com.example.application.security.SecurityService;
 import com.example.application.views.about.AboutView;
 import com.example.application.views.chat.ChatView;
 import com.example.application.views.helloworld.HelloWorldView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
@@ -22,9 +24,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
  */
 public class MainLayout extends AppLayout {
 
+    private final SecurityService securityService;
     private H2 viewTitle;
 
-    public MainLayout() {
+    public MainLayout(SecurityService securityService) {
+        this.securityService = securityService;
+
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
@@ -37,7 +42,14 @@ public class MainLayout extends AppLayout {
         viewTitle = new H2();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
-        addToNavbar(true, toggle, viewTitle);
+        if (securityService.getAuthenticatedUser() != null) {
+            Button logout = new Button("Logout", click ->
+                    securityService.logout());
+            logout.addClassName("logout-button");
+            addToNavbar(true, toggle, viewTitle, logout);
+        } else {
+            addToNavbar(true, toggle, viewTitle);
+        }
     }
 
     private void addDrawerContent() {

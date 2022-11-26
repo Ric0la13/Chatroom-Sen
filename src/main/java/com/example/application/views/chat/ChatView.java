@@ -16,7 +16,10 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import javax.annotation.security.PermitAll;
+
 @PageTitle("Chat")
+@PermitAll
 @Route(value = "chat", layout = MainLayout.class)
 public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
 

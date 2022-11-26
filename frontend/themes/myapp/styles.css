@@ -7,6 +7,30 @@
     border-radius: 0 1rem 1rem 1rem;
     line-break: anywhere;
     max-width: 80%;
+
+    display: grid;
+    gap: 0 1rem;
+    grid-template-areas: "userId timestamp"
+                         "text   text"
+}
+
+.message > .user-id {
+    grid-area: userId;
+    font-weight: bold;
+}
+
+.message > .timestamp {
+    grid-area: timestamp;
+    font-size: small;
+    text-align: end;
+}
+
+.message > .text {
+    grid-area: text;
+}
+
+.message.own > .text {
+    text-align: front;
 }
 
 .message.own {

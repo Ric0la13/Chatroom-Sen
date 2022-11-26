@@ -1,9 +1,9 @@
 package com.example.application.service;
 
 import com.example.application.views.chat.ChatView;
+import com.example.application.views.chat.Message;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ public class ChatService {
 
     public void postMessage(String value, UI currentUI) {
         uiList.forEach(ui -> ui.access(() -> {
-            Span message = new Span(value);
-            message.addClassName("message");
+            String userId = String.valueOf(currentUI.getUIId());
+            Message message = new Message(userId, value);
             if (ui.equals(currentUI)) {
                 message.addClassName("own");
             }

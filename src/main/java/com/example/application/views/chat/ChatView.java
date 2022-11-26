@@ -2,7 +2,6 @@ package com.example.application.views.chat;
 
 import com.example.application.service.ChatService;
 import com.example.application.views.MainLayout;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -50,7 +49,7 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         setSizeFull();
     }
 
-    public void addMessage(Component message) {
+    public void addMessage(Message message) {
         chatContent.add(message);
     }
 

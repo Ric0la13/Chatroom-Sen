@@ -21,9 +21,13 @@ public class ChatService {
         uiList.add(ui);
     }
 
-    public void postMessage(String value) {
+    public void postMessage(String value, UI currentUI) {
         uiList.forEach(ui -> ui.access(() -> {
             Span message = new Span(value);
+            message.addClassName("message");
+            if (ui.equals(currentUI)) {
+                message.addClassName("own");
+            }
             ui.getChildren()
                     .flatMap(Component::getChildren)
                     .filter(ChatView.class::isInstance)

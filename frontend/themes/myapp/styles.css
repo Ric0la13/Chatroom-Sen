@@ -1,2 +1,20 @@
 @import url('./main-layout.css');
 @import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
+
+.message {
+    padding: 0.5rem 1rem;
+    background: lightgray;
+    border-radius: 0 1rem 1rem 1rem;
+    line-break: anywhere;
+    max-width: 80%;
+}
+
+.message.own {
+    background: lightgreen;
+    border-radius: 1rem 1rem 0 1rem;
+    align-self: end;
+}
+
+vaadin-scroller {
+    scrollbar-gutter: stable;
+}

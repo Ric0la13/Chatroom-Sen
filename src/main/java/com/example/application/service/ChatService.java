@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.function.Predicate.not;
+
 @Service
 public class ChatService {
     private final List<UI> uiList;
@@ -22,6 +24,9 @@ public class ChatService {
     }
 
     public void postMessage(String value, UI currentUI) {
+        uiList.stream()
+                .filter(not(UI::isAttached))
+                .forEach(this::removeUI);
         uiList.forEach(ui -> ui.access(() -> {
             String userId = String.valueOf(currentUI.getUIId());
             Message message = new Message(userId, value);

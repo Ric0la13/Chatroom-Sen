@@ -39,7 +39,7 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
             if (value.isBlank()) {
                 return;
             }
-            chatService.postMessage(value, UI.getCurrent());
+            chatService.postMessage(value);
             inputField.clear();
         });
         inputField.addKeyDownListener(Key.ENTER, keyDownEvent -> sendButton.click());

@@ -1,9 +1,11 @@
 package com.example.application.service;
 
+import com.example.application.security.SecurityService;
 import com.example.application.views.chat.ChatView;
 import com.example.application.views.chat.Message;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,8 +16,11 @@ import static java.util.function.Predicate.not;
 @Service
 public class ChatService {
     private final List<UI> uiList;
+    private final SecurityService securityService;
 
-    public ChatService() {
+    public ChatService(SecurityService securityService) {
+        this.securityService = securityService;
+
         uiList = new ArrayList<>();
     }
 
@@ -23,14 +28,14 @@ public class ChatService {
         uiList.add(ui);
     }
 
-    public void postMessage(String value, UI currentUI) {
+    public void postMessage(String value) {
         uiList.stream()
                 .filter(not(UI::isAttached))
                 .forEach(this::removeUI);
+        UserDetails sendingUser = securityService.getAuthenticatedUser();
         uiList.forEach(ui -> ui.access(() -> {
-            String userId = String.valueOf(currentUI.getUIId());
-            Message message = new Message(userId, value);
-            if (ui.equals(currentUI)) {
+            Message message = new Message(sendingUser.getUsername(), value);
+            if (securityService.getAuthenticatedUser().equals(sendingUser)) {
                 message.addClassName("own");
             }
             ui.getChildren()

@@ -11,16 +11,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 
 import javax.annotation.security.PermitAll;
 
 @PageTitle("Chat")
 @PermitAll
 @Route(value = "chat", layout = MainLayout.class)
+@RouteAlias(value = "", layout = MainLayout.class)
 public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
 
     private final ChatService chatService;

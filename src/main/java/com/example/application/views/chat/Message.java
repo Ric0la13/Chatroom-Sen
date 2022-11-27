@@ -30,6 +30,8 @@ public class Message extends Div {
         String profilePicturePath = "VAADIN/profilepictures/" + userId + ".png";
 
         Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
+        profilePicture.getElement().setAttribute("onError", "{"
+                + "event.target.src = \"images/default-avatar.png\"}");
         profilePicture.addClassName("profile");
 
         add(profilePicture, message);

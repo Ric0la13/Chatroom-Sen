@@ -23,6 +23,7 @@
     grid-area: timestamp;
     font-size: small;
     text-align: end;
+    white-space: nowrap;
 }
 
 .message > .text {
@@ -33,10 +34,9 @@
     text-align: front;
 }
 
-.message.own {
+.picandmess.own > .message {
     background: lightgreen;
     border-radius: 1rem 1rem 0 1rem;
-    align-self: end;
 }
 
 vaadin-scroller {
@@ -46,4 +46,21 @@ vaadin-scroller {
 .logout-button {
     margin-left: auto;
     margin-right: 0.5rem;
+}
+
+.picandmess {
+    display: flex;
+    gap: 1rem;
+}
+
+.picandmess.own {
+    align-self: end;
+    flex-direction: row-reverse;
+}
+
+.picandmess > .profile {
+    height: 4rem;
+    width: 4rem;
+    border-radius: 2rem;
+    object-fit: cover;
 }

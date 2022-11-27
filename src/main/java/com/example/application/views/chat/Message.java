@@ -1,6 +1,7 @@
 package com.example.application.views.chat;
 
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 
 import java.text.SimpleDateFormat;
@@ -23,7 +24,16 @@ public class Message extends Div {
         messageTextSpan.addClassName("text");
         dateTimeSpan.addClassName("timestamp");
 
-        add(userIdSpan, messageTextSpan, dateTimeSpan);
-        addClassName("message");
+        Div message = new Div(userIdSpan, messageTextSpan, dateTimeSpan);
+        message.addClassName("message");
+
+        String profilePicturePath = "VAADIN/profilepictures/" + userId + ".png";
+
+        Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
+        profilePicture.addClassName("profile");
+
+        add(profilePicture, message);
+
+        addClassName("picandmess");
     }
 }

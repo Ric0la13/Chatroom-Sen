@@ -36,7 +36,7 @@ public class HelloWorldView extends HorizontalLayout {
         dropEnabledUpload.setAcceptedFileTypes("image/png", ".png");
 
         String username = securityService.getAuthenticatedUser().getUsername();
-        String fileName = "C:\\Users\\ricol\\Documents\\" + username + ".png";
+        String fileName = "src/main/webapp/VAADIN/profilepictures/" + username + ".png";
 
         dropEnabledUpload.addSucceededListener(event -> {
             try (FileOutputStream out = new FileOutputStream(fileName)) {

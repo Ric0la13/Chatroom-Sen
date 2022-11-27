@@ -10,17 +10,17 @@ import java.util.Optional;
 @Service
 public class DisplayNameService {
 
-    Map<UserDetails, String> userToNameMap;
+    Map<String, String> userIdToDisplayNameMap;
 
     public DisplayNameService() {
-        userToNameMap = new HashMap<>();
+        userIdToDisplayNameMap = new HashMap<>();
     }
 
     public void setDisplayName(UserDetails userDetails, String displayName) {
-        userToNameMap.put(userDetails, displayName);
+        userIdToDisplayNameMap.put(userDetails.getUsername(), displayName);
     }
 
     public Optional<String> getDisplayName(UserDetails userDetails) {
-        return Optional.ofNullable(userToNameMap.get(userDetails));
+        return Optional.ofNullable(userIdToDisplayNameMap.get(userDetails.getUsername()));
     }
 }

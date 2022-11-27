@@ -58,9 +58,32 @@ vaadin-scroller {
     flex-direction: row-reverse;
 }
 
-.picandmess > .profile {
+.profile {
     height: 4rem;
     width: 4rem;
     border-radius: 2rem;
     object-fit: cover;
+}
+
+.role-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.role {
+    padding: 0.2rem 0.4rem;
+    background: lightgray;
+    border-radius: .5rem;
+}
+
+.online {
+    padding: 0.2rem 0.4rem;
+    background: lightgreen;
+    border-radius: .5rem;
+}
+
+.offline {
+    padding: 0.2rem 0.4rem;
+    background: lightpink;
+    border-radius: .5rem;
 }

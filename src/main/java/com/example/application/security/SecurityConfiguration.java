@@ -58,7 +58,7 @@ public class SecurityConfiguration
         UserDetails rico =
                 User.withUsername("vivar")
                         .password("{noop}Rico.33")
-                        .roles("USER")
+                        .roles("ADMIN", "USER")
                         .build();
         UserDetails jan =
                 User.withUsername("grafj")
@@ -80,6 +80,9 @@ public class SecurityConfiguration
                         .password("{noop}wwi21A!")
                         .roles("ADMIN")
                         .build();
+
+
+
         return new InMemoryUserDetailsManager(rico, jan, ben, jannik, admin);
     }
 }

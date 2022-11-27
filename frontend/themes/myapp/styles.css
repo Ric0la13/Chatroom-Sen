@@ -43,7 +43,12 @@ vaadin-scroller {
     scrollbar-gutter: stable;
 }
 
-.logout-button {
+#logout-button {
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+}
+
+#user-id-header {
     margin-left: auto;
     margin-right: 0.5rem;
 }
@@ -63,6 +68,11 @@ vaadin-scroller {
     width: 4rem;
     border-radius: 2rem;
     object-fit: cover;
+}
+
+.profile.small {
+    height: 2rem;
+    width: 2rem;
 }
 
 .role-container {

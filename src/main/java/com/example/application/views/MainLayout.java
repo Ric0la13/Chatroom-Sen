@@ -10,14 +10,12 @@ import com.example.application.views.helloworld.ProfileView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -42,14 +40,32 @@ public class MainLayout extends AppLayout {
         viewTitle = new H2();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
-        if (securityService.getAuthenticatedUser() != null) {
+        UserDetails authenticatedUser = securityService.getAuthenticatedUser();
+        if (authenticatedUser != null) {
+
+            Span userName = new Span(authenticatedUser.getUsername());
+            userName.setId("user-id-header");
+
             Button logout = new Button("Logout", click ->
                     securityService.logout());
-            logout.addClassName("logout-button");
-            addToNavbar(true, toggle, viewTitle, logout);
+            logout.setId("logout-button");
+
+            addToNavbar(true, toggle, viewTitle,
+                    userName, getProfilePicture(authenticatedUser), logout);
         } else {
             addToNavbar(true, toggle, viewTitle);
         }
+    }
+
+    private static Image getProfilePicture(UserDetails userDetails) {
+        String userId = userDetails.getUsername();
+        String profilePicturePath = "VAADIN/profilepictures/" + userId + ".png";
+
+        Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
+        profilePicture.getElement().setAttribute("onError", "{"
+                + "event.target.src = \"images/default-avatar.png\"}");
+        profilePicture.addClassNames("profile", "small");
+        return profilePicture;
     }
 
     private void addDrawerContent() {

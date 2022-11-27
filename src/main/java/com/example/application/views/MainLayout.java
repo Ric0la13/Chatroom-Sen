@@ -6,7 +6,7 @@ import com.example.application.components.appnav.AppNavItem;
 import com.example.application.security.SecurityService;
 import com.example.application.views.about.AboutView;
 import com.example.application.views.chat.ChatView;
-import com.example.application.views.helloworld.HelloWorldView;
+import com.example.application.views.helloworld.ProfileView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -67,7 +67,7 @@ public class MainLayout extends AppLayout {
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
 
-        nav.addItem(new AppNavItem("Hello World", HelloWorldView.class, VaadinIcon.GLOBE.create()));
+        nav.addItem(new AppNavItem("My Profile", ProfileView.class, VaadinIcon.USER.create()));
         nav.addItem(new AppNavItem("About", AboutView.class, VaadinIcon.FILE_O.create()));
         nav.addItem(new AppNavItem("Chat", ChatView.class, VaadinIcon.CHAT.create()));
 

@@ -79,6 +79,9 @@ public class ProfileView extends VerticalLayout {
     }
 
     private void changeDisplayNameForUser(UserDetails authenticatedUser) {
+        if (name.getValue().isBlank()) {
+            Notification.show("Your display-name may not be blank");
+        }
         displayNameService.setDisplayName(authenticatedUser, name.getValue());
         Notification.show("Your display-name has sucessfully changed to: " + name.getValue());
     }

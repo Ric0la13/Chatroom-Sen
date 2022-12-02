@@ -1,5 +1,6 @@
 package com.example.application.views.chat;
 
+import com.example.application.security.SecurityService;
 import com.example.application.service.ChatService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
@@ -12,11 +13,10 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
-
-import javax.annotation.security.PermitAll;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 @PageTitle("Chat")
-@PermitAll
+@AnonymousAllowed
 @Route(value = "chat", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
@@ -24,8 +24,12 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
     private final ChatService chatService;
     private final VerticalLayout chatContent;
 
-    public ChatView(ChatService chatService) {
+    private final boolean isAnonymous;
+
+    public ChatView(ChatService chatService, SecurityService securityService) {
         this.chatService = chatService;
+
+        isAnonymous = securityService.getAuthenticatedUser() == null;
 
         chatContent = new VerticalLayout();
         chatService.addUI(UI.getCurrent());
@@ -39,7 +43,7 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
             if (value.isBlank()) {
                 return;
             }
-            chatService.postMessage(value);
+            chatService.postMessage(value, UI.getCurrent());
             inputField.clear();
         });
         inputField.addKeyDownListener(Key.ENTER, keyDownEvent -> sendButton.click());
@@ -52,6 +56,10 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
 
     public void addMessage(Message message) {
         chatContent.add(message);
+    }
+
+    public boolean isAnonymous() {
+        return isAnonymous;
     }
 
     @Override

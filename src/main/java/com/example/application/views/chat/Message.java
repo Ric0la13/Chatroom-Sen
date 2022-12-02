@@ -12,13 +12,14 @@ public class Message extends Div {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd. MMM yyyy HH:mm");
 
-    public Message(String userId, String messageText) {
+    public Message(String userId, String messageText, boolean isAnonymous) {
 
         Span nameSpan = new Span(userId);
 
         Span messageTextSpan = getMessageTextSpan(messageText);
         Span dateTimeSpan = getDateTimeSpan();
-        Image profilePicture = getProfilePicture(userId);
+
+        Image profilePicture = isAnonymous ? getAnonymousProfilePicture() : getProfilePicture(userId);
 
         nameSpan.addClassName("user-id");
 
@@ -67,7 +68,13 @@ public class Message extends Div {
 
         Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
         profilePicture.getElement().setAttribute("onError", "{"
-                + "event.target.src = \"images/default-avatar.png\"}");
+                + "event.target.src = \"public/images/default-avatar.png\"}");
+        profilePicture.addClassName("profile");
+        return profilePicture;
+    }
+
+    private static Image getAnonymousProfilePicture() {
+        Image profilePicture = new Image("public/images/anonymous-avatar.png", "Anonymous Profile Picture");
         profilePicture.addClassName("profile");
         return profilePicture;
     }

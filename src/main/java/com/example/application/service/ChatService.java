@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.function.Predicate.not;
 
@@ -30,18 +31,22 @@ public class ChatService {
         uiList.add(ui);
     }
 
-    public void postMessage(String value) {
+    public void postMessage(String value, UI currentUI) {
         uiList.stream()
                 .filter(not(UI::isAttached))
                 .forEach(this::removeUI);
         UserDetails sendingUser = securityService.getAuthenticatedUser();
-        uiList.forEach(ui -> ui.access(() -> sendMessage(value, sendingUser, ui)));
+        if (sendingUser == null) {
+            uiList.forEach(ui -> ui.access(() -> sendMessage(value, currentUI, ui)));
+        } else {
+            uiList.forEach(ui -> ui.access(() -> sendMessage(value, sendingUser, ui)));
+        }
     }
 
-    private void sendMessage(String value, UserDetails sendingUser, UI ui) {
-        Message message = createMessage(value, sendingUser);
+    private void sendMessage(String value, UI currentUI, UI ui) {
+        Message message = createMessage(value, currentUI);
 
-        if (securityService.getAuthenticatedUser().equals(sendingUser)) {
+        if (ui.equals(currentUI)) {
             message.addClassName("own");
         }
         ui.getChildren()
@@ -54,10 +59,33 @@ public class ChatService {
         message.scrollIntoView();
     }
 
+    private void sendMessage(String value, UserDetails sendingUser, UI ui) {
+        Message message = createMessage(value, sendingUser);
+
+        Optional<ChatView> chatView = ui.getChildren()
+                .flatMap(Component::getChildren)
+                .filter(ChatView.class::isInstance)
+                .findFirst()
+                .map(ChatView.class::cast);
+
+        boolean targetAnonymous = chatView.map(ChatView::isAnonymous).orElse(true);
+        if (!targetAnonymous && securityService.getAuthenticatedUser().equals(sendingUser)) {
+            message.addClassName("own");
+        }
+
+        chatView.ifPresent(component ->
+                        component.addMessage(message));
+        message.scrollIntoView();
+    }
+
     private Message createMessage(String value, UserDetails sendingUser) {
         return displayNameService.getDisplayName(sendingUser)
                 .map(displayName -> new Message(sendingUser.getUsername(), displayName, value))
-                .orElseGet(() -> new Message(sendingUser.getUsername(), value));
+                .orElseGet(() -> new Message(sendingUser.getUsername(), value, false));
+    }
+
+    private Message createMessage(String value, UI ui) {
+        return new Message("Anonymous " + ui.getUIId(), value, true);
     }
 
     public void removeUI(UI ui) {

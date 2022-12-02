@@ -3,10 +3,12 @@ package com.example.application.views;
 
 import com.example.application.components.appnav.AppNav;
 import com.example.application.components.appnav.AppNavItem;
+import com.example.application.security.LoginView;
 import com.example.application.security.SecurityService;
 import com.example.application.views.about.UserlistView;
 import com.example.application.views.chat.ChatView;
 import com.example.application.views.helloworld.ProfileView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -53,7 +55,11 @@ public class MainLayout extends AppLayout {
             addToNavbar(true, toggle, viewTitle,
                     userName, getProfilePicture(authenticatedUser), logout);
         } else {
-            addToNavbar(true, toggle, viewTitle);
+            Button login = new Button("Login", click ->
+                    UI.getCurrent().navigate(LoginView.class));
+            login.addClassName(LumoUtility.Margin.Left.AUTO);
+            login.addClassName(LumoUtility.Margin.Right.SMALL);
+            addToNavbar(true, toggle, viewTitle, login);
         }
     }
 

@@ -66,14 +66,8 @@ public class ProfileView extends VerticalLayout {
         String fileName = "src/main/webapp/VAADIN/profilepictures/" + username + ".png";
 
         dropEnabledUpload.addSucceededListener(event -> changeProfilePicture(memoryBuffer, fileName));
-        dropEnabledUpload.addFileRejectedListener(event -> {
-            Notification notification = Notification.show("file needs to be a png-file");
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-        });
-        dropEnabledUpload.addFailedListener(event -> {
-            Notification notification = Notification.show("file can not be uploaded to server");
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-        });
+        dropEnabledUpload.addFileRejectedListener(event -> showErrorMessage("file needs to be a png-file"));
+        dropEnabledUpload.addFailedListener(event -> showErrorMessage("file can not be uploaded to server"));
         return dropEnabledUpload;
     }
 
@@ -94,4 +88,9 @@ public class ProfileView extends VerticalLayout {
         Notification.show("Your display-name has sucessfully changed to: " + name.getValue());
     }
 
+    private static void showErrorMessage(String text) {
+        Notification show = Notification.show(text);
+        show.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        show.setPosition(Notification.Position.MIDDLE);
+    }
 }

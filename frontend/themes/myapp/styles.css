@@ -10,8 +10,8 @@
 
     display: grid;
     gap: 0 1rem;
-    grid-template-areas: "userId timestamp"
-                         "text   text"
+    grid-template: "userId timestamp"
+                   "body   body";
 }
 
 .message > .user-id {
@@ -26,8 +26,13 @@
     white-space: nowrap;
 }
 
-.message > .text {
-    grid-area: text;
+.message > .body {
+    grid-area: body;
+}
+
+.message > img.body {
+    width: 20vw;
+    max-width: 100%;
 }
 
 .message.own > .text {

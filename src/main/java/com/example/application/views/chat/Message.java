@@ -1,5 +1,7 @@
 package com.example.application.views.chat;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -12,18 +14,25 @@ public class Message extends Div {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd. MMM yyyy HH:mm");
 
-    public Message(String userId, String messageText, boolean isAnonymous) {
+    public Message(String userId, String input, boolean isAnonymous, boolean isImageMessage) {
 
         Span nameSpan = new Span(userId);
 
-        Span messageTextSpan = getMessageTextSpan(messageText);
+        Component messageBody;
+        if (isImageMessage) {
+            messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
+        } else {
+            messageBody = new Span(input);
+        }
+        ((HasStyle) messageBody).addClassName("body");
+
         Span dateTimeSpan = getDateTimeSpan();
 
         Image profilePicture = isAnonymous ? getAnonymousProfilePicture() : getProfilePicture(userId);
 
         nameSpan.addClassName("user-id");
 
-        Div message = new Div(nameSpan, messageTextSpan, dateTimeSpan);
+        Div message = new Div(nameSpan, messageBody, dateTimeSpan);
         message.addClassName("message");
 
         add(profilePicture, message);
@@ -31,28 +40,29 @@ public class Message extends Div {
         addClassName("picandmess");
     }
 
-    public Message(String userId, String displayName, String messageText) {
+    public Message(String userId, String displayName, String input, boolean isImageMessage) {
 
         Span nameSpan = new Span(displayName);
 
-        Span messageTextSpan = getMessageTextSpan(messageText);
+        Component messageBody;
+        if (isImageMessage) {
+            messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
+        } else {
+            messageBody = new Span(input);
+        }
+        ((HasStyle) messageBody).addClassName("body");
+
         Span dateTimeSpan = getDateTimeSpan();
         Image profilePicture = getProfilePicture(userId);
 
         nameSpan.addClassName("user-id");
 
-        Div message = new Div(nameSpan, messageTextSpan, dateTimeSpan);
+        Div message = new Div(nameSpan, messageBody, dateTimeSpan);
         message.addClassName("message");
 
         add(profilePicture, message);
 
         addClassName("picandmess");
-    }
-
-    private static Span getMessageTextSpan(String messageText) {
-        Span messageTextSpan = new Span(messageText);
-        messageTextSpan.addClassName("text");
-        return messageTextSpan;
     }
 
     private static Span getDateTimeSpan() {

@@ -3,11 +3,14 @@ package com.example.application.views.chat;
 import com.example.application.security.SecurityService;
 import com.example.application.service.ChatService;
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -17,6 +20,11 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import elemental.json.Json;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 @PageTitle("Chat")
 @AnonymousAllowed
@@ -60,11 +68,13 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         setSizeFull();
     }
 
-    private static Upload getUpload() {
+    private Upload getUpload() {
         MemoryBuffer memoryBuffer = new MemoryBuffer();
 
         Upload upload = new Upload(memoryBuffer);
         upload.setDropAllowed(false);
+
+        upload.setAcceptedFileTypes("image/png", ".png", "image/jpeg", ".jpeg", ".jpg", "image/gif", ".gif");
 
         Button uploadButton = new Button(VaadinIcon.FILE_PICTURE.create());
         upload.setUploadButton(uploadButton);
@@ -73,10 +83,40 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         upload.addStartedListener(ChatView::removeFileListFromUpload);
         upload.addFileRejectedListener(ChatView::removeFileListFromUpload);
 
+        upload.addFileRejectedListener(event -> showErrorMessage("Rejected: " + event.getErrorMessage()));
+        upload.addFailedListener(event -> showErrorMessage("Failed to process image."));
+
+        upload.addSucceededListener(event -> {
+            String fileName = saveImageOnServer(memoryBuffer);
+            chatService.postImageMessage(fileName, UI.getCurrent());
+        });
+
         return upload;
     }
 
-    private static void removeFileListFromUpload(Upload upload) {
+    private static void showErrorMessage(String text) {
+        Notification show = Notification.show(text);
+        show.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        show.setPosition(Notification.Position.MIDDLE);
+    }
+
+    private static String saveImageOnServer(MemoryBuffer memoryBuffer) {
+
+        String extension = FilenameUtils.getExtension(memoryBuffer.getFileName());
+
+        String name = System.currentTimeMillis() + "." + extension;
+        String fileName = "src/main/webapp/VAADIN/chatpictures/" + name;
+        try (FileOutputStream out = new FileOutputStream(fileName)) {
+            byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
+            out.write(bytes);
+        } catch (IOException e) {
+            Notification.show("image can not be written to server");
+        }
+        return name;
+    }
+
+    private static void removeFileListFromUpload(ComponentEvent<Upload> event) {
+        Upload upload = event.getSource();
         upload.getElement().setPropertyJson("files", Json.createArray());
     }
 

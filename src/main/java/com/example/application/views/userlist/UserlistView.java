@@ -1,4 +1,4 @@
-package com.example.application.views.about;
+package com.example.application.views.userlist;
 
 import com.example.application.security.SecurityService;
 import com.example.application.service.DisplayNameService;

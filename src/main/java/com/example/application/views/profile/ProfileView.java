@@ -1,4 +1,4 @@
-package com.example.application.views.helloworld;
+package com.example.application.views.profile;
 
 import com.example.application.security.SecurityService;
 import com.example.application.service.DisplayNameService;

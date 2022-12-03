@@ -12,8 +12,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import elemental.json.Json;
 
 @PageTitle("Chat")
 @AnonymousAllowed
@@ -48,10 +51,32 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         });
         inputField.addKeyDownListener(Key.ENTER, keyDownEvent -> sendButton.click());
         sendButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        HorizontalLayout sendContainer = new HorizontalLayout(inputField, sendButton);
+
+        Upload upload = getUpload();
+
+        HorizontalLayout sendContainer = new HorizontalLayout(inputField, upload, sendButton);
         sendContainer.setWidthFull();
         add(scroller, sendContainer);
         setSizeFull();
+    }
+
+    private static Upload getUpload() {
+        MemoryBuffer memoryBuffer = new MemoryBuffer();
+
+        Upload upload = new Upload(memoryBuffer);
+        upload.setDropAllowed(false);
+
+        Button uploadButton = new Button(VaadinIcon.FILE_PICTURE.create());
+        upload.setUploadButton(uploadButton);
+
+        upload.getElement().addEventListener("DOMSubtreeModified", event -> removeFileListFromUpload(upload));
+        upload.addStartedListener(event1 -> removeFileListFromUpload(upload));
+        upload.addFileRejectedListener(event -> removeFileListFromUpload(upload));
+        return upload;
+    }
+
+    private static void removeFileListFromUpload(Upload upload) {
+        upload.getElement().setPropertyJson("files", Json.createArray());
     }
 
     public void addMessage(Message message) {

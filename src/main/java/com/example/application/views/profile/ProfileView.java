@@ -57,6 +57,7 @@ public class ProfileView extends VerticalLayout {
 
         Upload dropEnabledUpload = new Upload(memoryBuffer);
         dropEnabledUpload.setId("upload-element");
+        dropEnabledUpload.setMaxFileSize(50_000_000);
         dropEnabledUpload.setUploadButton(uploadButton);
 
         dropEnabledUpload.setAcceptedFileTypes("image/png", ".png");

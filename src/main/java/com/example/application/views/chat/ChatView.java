@@ -68,10 +68,11 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
 
         Button uploadButton = new Button(VaadinIcon.FILE_PICTURE.create());
         upload.setUploadButton(uploadButton);
+        upload.setMaxFileSize(50_000_000);
 
-        upload.getElement().addEventListener("DOMSubtreeModified", event -> removeFileListFromUpload(upload));
-        upload.addStartedListener(event1 -> removeFileListFromUpload(upload));
-        upload.addFileRejectedListener(event -> removeFileListFromUpload(upload));
+        upload.addStartedListener(ChatView::removeFileListFromUpload);
+        upload.addFileRejectedListener(ChatView::removeFileListFromUpload);
+
         return upload;
     }
 

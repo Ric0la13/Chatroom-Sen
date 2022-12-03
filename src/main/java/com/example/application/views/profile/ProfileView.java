@@ -17,7 +17,7 @@ import com.vaadin.flow.router.Route;
 import org.apache.commons.io.IOUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.annotation.security.PermitAll;
+import jakarta.annotation.security.PermitAll;
 import java.io.FileOutputStream;
 import java.io.IOException;
 

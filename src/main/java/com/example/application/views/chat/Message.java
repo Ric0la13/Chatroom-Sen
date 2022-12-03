@@ -14,7 +14,7 @@ public class Message extends Div {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd. MMM yyyy HH:mm");
 
-    public Message(String userId, String input, boolean isAnonymous, boolean isImageMessage) {
+    public Message(String userId, String input, Date date, boolean isAnonymous, boolean isImageMessage) {
 
         Span nameSpan = new Span(userId);
 
@@ -26,7 +26,7 @@ public class Message extends Div {
         }
         ((HasStyle) messageBody).addClassName("body");
 
-        Span dateTimeSpan = getDateTimeSpan();
+        Span dateTimeSpan = getDateTimeSpan(date);
 
         Image profilePicture = isAnonymous ? getAnonymousProfilePicture() : getProfilePicture(userId);
 
@@ -40,7 +40,7 @@ public class Message extends Div {
         addClassName("picandmess");
     }
 
-    public Message(String userId, String displayName, String input, boolean isImageMessage) {
+    public Message(String userId, String displayName, String input, Date date, boolean isImageMessage) {
 
         Span nameSpan = new Span(displayName);
 
@@ -52,7 +52,7 @@ public class Message extends Div {
         }
         ((HasStyle) messageBody).addClassName("body");
 
-        Span dateTimeSpan = getDateTimeSpan();
+        Span dateTimeSpan = getDateTimeSpan(date);
         Image profilePicture = getProfilePicture(userId);
 
         nameSpan.addClassName("user-id");
@@ -65,9 +65,8 @@ public class Message extends Div {
         addClassName("picandmess");
     }
 
-    private static Span getDateTimeSpan() {
-        Date currentTime = new Date();
-        String timeStamp = DATE_FORMAT.format(currentTime);
+    private static Span getDateTimeSpan(Date date) {
+        String timeStamp = DATE_FORMAT.format(date);
         Span dateTimeSpan = new Span(timeStamp);
         dateTimeSpan.addClassName("timestamp");
         return dateTimeSpan;

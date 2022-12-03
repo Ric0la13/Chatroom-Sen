@@ -32,8 +32,7 @@ public class SecurityConfiguration
 
         // Configure your static resources with public access before calling
         // super.configure(HttpSecurity) as it adds final anyRequest matcher
-        http.authorizeRequests().antMatchers("/public/**")
-                .permitAll();
+        http.authorizeHttpRequests().requestMatchers("/public/**").permitAll();
 
         super.configure(http);
 

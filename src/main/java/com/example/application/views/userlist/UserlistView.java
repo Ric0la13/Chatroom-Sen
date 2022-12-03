@@ -13,7 +13,7 @@ import com.vaadin.flow.router.Route;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.annotation.security.PermitAll;
+import jakarta.annotation.security.PermitAll;
 import java.util.List;
 
 @PageTitle("Userlist")

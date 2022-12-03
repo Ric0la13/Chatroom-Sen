@@ -1,6 +1,7 @@
 package com.example.application.views.chat;
 
 import com.example.application.security.SecurityService;
+import com.example.application.service.ChatException;
 import com.example.application.service.ChatService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ComponentEvent;
@@ -25,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 @PageTitle("Chat")
 @AnonymousAllowed
@@ -47,6 +49,10 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         Scroller scroller = new Scroller(chatContent);
         scroller.setSizeFull();
 
+        if (!isAnonymous) {
+            fillChatContentWithOldMessages();
+        }
+
         TextField inputField = new TextField();
         inputField.setWidthFull();
         Button sendButton = new Button(VaadinIcon.PAPERPLANE_O.create(), buttonClickEvent -> {
@@ -54,8 +60,12 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
             if (value.isBlank()) {
                 return;
             }
-            chatService.postMessage(value, UI.getCurrent());
-            inputField.clear();
+            try {
+                chatService.postMessage(value, UI.getCurrent());
+                inputField.clear();
+            } catch (ChatException e) {
+                showErrorMessage("Message can't be sent.");
+            }
         });
         inputField.addKeyDownListener(Key.ENTER, keyDownEvent -> sendButton.click());
         sendButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -66,6 +76,12 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         sendContainer.setWidthFull();
         add(scroller, sendContainer);
         setSizeFull();
+    }
+
+    private void fillChatContentWithOldMessages() {
+        List<Message> messages = chatService.getAllOldMessages();
+        messages.forEach(chatContent::add);
+
     }
 
     private Upload getUpload() {

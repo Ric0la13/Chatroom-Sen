@@ -38,9 +38,7 @@ public class ProfileView extends VerticalLayout {
         changeDisplayName.addClickListener(e -> changeDisplayNameForUser(authenticatedUser));
         changeDisplayName.addClickShortcut(Key.ENTER);
 
-        MemoryBuffer memoryBuffer = new MemoryBuffer();
-
-        Upload dropEnabledUpload = createUpload(authenticatedUser, memoryBuffer);
+        Upload dropEnabledUpload = createUpload(authenticatedUser);
 
         setMargin(true);
 
@@ -50,9 +48,11 @@ public class ProfileView extends VerticalLayout {
         add(nameContainer, dropEnabledUpload);
     }
 
-    private Upload createUpload(UserDetails authenticatedUser, MemoryBuffer memoryBuffer) {
+    private Upload createUpload(UserDetails authenticatedUser) {
 
         Button uploadButton = new Button("Upload profile-picture...");
+
+        MemoryBuffer memoryBuffer = new MemoryBuffer();
 
         Upload dropEnabledUpload = new Upload(memoryBuffer);
         dropEnabledUpload.setId("upload-element");

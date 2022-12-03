@@ -6,6 +6,7 @@ import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -64,8 +65,14 @@ public class ProfileView extends VerticalLayout {
         String fileName = "src/main/webapp/VAADIN/profilepictures/" + username + ".png";
 
         dropEnabledUpload.addSucceededListener(event -> changeProfilePicture(memoryBuffer, fileName));
-        dropEnabledUpload.addFileRejectedListener(event -> Notification.show("file needs to be a png-file"));
-        dropEnabledUpload.addFailedListener(event -> Notification.show("file can not be uploaded to server"));
+        dropEnabledUpload.addFileRejectedListener(event -> {
+            Notification notification = Notification.show("file needs to be a png-file");
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        });
+        dropEnabledUpload.addFailedListener(event -> {
+            Notification notification = Notification.show("file can not be uploaded to server");
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        });
         return dropEnabledUpload;
     }
 

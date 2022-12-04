@@ -82,6 +82,9 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         List<Message> messages = chatService.getAllOldMessages();
         messages.forEach(chatContent::add);
 
+        if (!messages.isEmpty()) {
+            messages.get(messages.size() - 1).scrollIntoView();
+        }
     }
 
     private Upload getUpload() {

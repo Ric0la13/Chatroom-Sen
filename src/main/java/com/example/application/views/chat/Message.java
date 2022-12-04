@@ -20,7 +20,7 @@ public class Message extends Div {
 
         Component messageBody;
         if (isImageMessage) {
-            messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
+            messageBody = createChatImage(input);
         } else {
             messageBody = new Span(input);
         }
@@ -46,7 +46,7 @@ public class Message extends Div {
 
         Component messageBody;
         if (isImageMessage) {
-            messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
+            messageBody = createChatImage(input);
         } else {
             messageBody = new Span(input);
         }
@@ -63,6 +63,13 @@ public class Message extends Div {
         add(profilePicture, message);
 
         addClassName("picandmess");
+    }
+
+    private Image createChatImage(String input) {
+        Image messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
+        messageBody.getElement().setAttribute("onLoad", "{"
+                + "event.target.scrollIntoView()}");
+        return messageBody;
     }
 
     private static Span getDateTimeSpan(Date date) {

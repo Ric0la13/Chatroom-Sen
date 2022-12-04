@@ -5,6 +5,7 @@ import com.example.application.service.DisplayNameService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -39,6 +40,8 @@ public class ProfileView extends VerticalLayout {
         changeDisplayName.addClickListener(e -> changeDisplayNameForUser(authenticatedUser));
         changeDisplayName.addClickShortcut(Key.ENTER);
 
+        Label profilePictureLabel = new Label("Select your Profile Picture");
+
         Upload dropEnabledUpload = createUpload(authenticatedUser);
 
         setMargin(true);
@@ -46,7 +49,7 @@ public class ProfileView extends VerticalLayout {
         HorizontalLayout nameContainer = new HorizontalLayout(name, changeDisplayName);
         nameContainer.setAlignItems(Alignment.BASELINE);
 
-        add(nameContainer, dropEnabledUpload);
+        add(nameContainer, profilePictureLabel, dropEnabledUpload);
     }
 
     private Upload createUpload(UserDetails authenticatedUser) {

@@ -5,9 +5,9 @@ import com.example.application.components.appnav.AppNav;
 import com.example.application.components.appnav.AppNavItem;
 import com.example.application.security.LoginView;
 import com.example.application.security.SecurityService;
-import com.example.application.views.userlist.UserlistView;
 import com.example.application.views.chat.ChatView;
 import com.example.application.views.profile.ProfileView;
+import com.example.application.views.userlist.UserlistView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -89,10 +89,16 @@ public class MainLayout extends AppLayout {
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
 
-        nav.addItem(new AppNavItem("My Profile", ProfileView.class, VaadinIcon.USER.create()));
-        nav.addItem(new AppNavItem("Userlist", UserlistView.class, VaadinIcon.USERS.create()));
-        nav.addItem(new AppNavItem("Chat", ChatView.class, VaadinIcon.CHAT.create()));
+        AppNavItem myProfile = new AppNavItem("My Profile", ProfileView.class, VaadinIcon.USER.create());
+        AppNavItem userlist = new AppNavItem("Userlist", UserlistView.class, VaadinIcon.USERS.create());
+        AppNavItem chat = new AppNavItem("Chat", ChatView.class, VaadinIcon.CHAT.create());
+        nav.addItem(myProfile, userlist, chat);
 
+        UI.getCurrent().getPage().fetchCurrentURL(url -> {
+            if (url.getPath().equals("/")) {
+                chat.getElement().setAttribute("active", true);
+            }
+        });
         return nav;
     }
 

@@ -1,5 +1,6 @@
 package com.example.application.views.profile;
 
+import com.example.application.repository.UserRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.service.DisplayNameService;
 import com.example.application.views.MainLayout;
@@ -29,14 +30,17 @@ public class ProfileView extends VerticalLayout {
 
     private final TextField name;
     private final DisplayNameService displayNameService;
+    private final UserRepository userRepository;
 
-    public ProfileView(SecurityService securityService, DisplayNameService displayNameService) {
+    public ProfileView(SecurityService securityService, DisplayNameService displayNameService,
+                       UserRepository userRepository) {
         this.displayNameService = displayNameService;
+        this.userRepository = userRepository;
 
         UserDetails authenticatedUser = securityService.getAuthenticatedUser();
 
         name = new TextField("Your name");
-        Button changeDisplayName = new Button("Set display-name");
+        Button changeDisplayName = new Button("Change display-name");
         changeDisplayName.addClickListener(e -> changeDisplayNameForUser(authenticatedUser));
         changeDisplayName.addClickShortcut(Key.ENTER);
 
@@ -84,11 +88,15 @@ public class ProfileView extends VerticalLayout {
     }
 
     private void changeDisplayNameForUser(UserDetails authenticatedUser) {
-        if (name.getValue().isBlank()) {
+        String nickname = name.getValue();
+        if (nickname.isBlank()) {
             Notification.show("Your display-name may not be blank");
         }
-        displayNameService.setDisplayName(authenticatedUser, name.getValue());
-        Notification.show("Your display-name has sucessfully changed to: " + name.getValue());
+        displayNameService.setDisplayName(authenticatedUser, nickname);
+
+        userRepository.setUserNickname(nickname, authenticatedUser.getUsername());
+
+        Notification.show("Your display-name has sucessfully changed to: " + nickname);
     }
 
     private static void showErrorMessage(String text) {

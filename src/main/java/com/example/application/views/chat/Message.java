@@ -67,8 +67,10 @@ public class Message extends Div {
 
     private Image createChatImage(String input) {
         Image messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
-        messageBody.getElement().setAttribute("onLoad", "{"
-                + "event.target.scrollIntoView()}");
+        messageBody.getElement().setAttribute("onLoad", """
+                parent = event.target.parentElement.parentElement.parentElement.parentElement;
+                parent.scrollTo(0, parent.scrollHeight);
+                """);
         return messageBody;
     }
 

@@ -48,7 +48,9 @@ public class SecurityService implements ApplicationListener<InteractiveAuthentic
 
             Map<String, UserDetails> userDetailsMap = (Map<String, UserDetails>) usersField.get(userDetailsManager);
 
-            return new ArrayList<>(userDetailsMap.values());
+            return userDetailsMap.values().stream()
+                    .sorted(Comparator.comparing(UserDetails::getUsername))
+                    .toList();
         } catch (NoSuchFieldException | IllegalAccessException e) {
             return List.of();
         }

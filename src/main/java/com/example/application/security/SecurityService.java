@@ -2,7 +2,6 @@ package com.example.application.security;
 
 import com.example.application.model.ApplicationUser;
 import com.example.application.repository.UserRepository;
-import com.example.application.utils.UserUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import org.springframework.context.ApplicationListener;
@@ -84,7 +83,6 @@ public class SecurityService implements ApplicationListener<InteractiveAuthentic
     public void register(ApplicationUser applicationUser) {
         userRepository.save(applicationUser);
 
-        UserUtils.addUser(applicationUser);
         userDetailsManager.createUser(User
                 .withUsername(applicationUser.getUserName())
                 .password("{noop}" + applicationUser.getPassword())

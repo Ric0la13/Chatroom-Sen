@@ -65,6 +65,7 @@ public class SecurityConfiguration
 
         users.addAll(databaseUsers);
 
+        displayNameService.setDisplayName(rico, "Rico Viva");
 
         databaseUsers.forEach(userDetails -> {
             String nickname = userRepository.findByUserName(userDetails.getUsername()).getNickname();

@@ -1,11 +1,14 @@
 package com.example.application.security;
 
+import com.example.application.model.ApplicationUser;
+import com.example.application.utils.UserUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -67,6 +70,21 @@ public class SecurityService implements ApplicationListener<InteractiveAuthentic
                 null);
 
         loggedInUserIds.remove(authenticatedUser.getUsername());
+    }
+
+    public boolean userNameStillAvailable(String username) {
+        return !userDetailsManager.userExists(username);
+    }
+
+    public void register(ApplicationUser applicationUser) {
+        UserUtils.addUser(applicationUser);
+        userDetailsManager.createUser(User
+                .withUsername(applicationUser.getUserName())
+                .password("{noop}" + applicationUser.getPassword())
+                .roles("USER")
+                .build()
+        );
+
     }
 
     @Override

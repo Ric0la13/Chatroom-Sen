@@ -1,5 +1,8 @@
 package com.example.application.security;
 
+import com.example.application.model.ApplicationUser;
+import com.example.application.repository.UserRepository;
+import com.example.application.service.DisplayNameService;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,77 +14,63 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration
         extends VaadinWebSecurity {
 
+    private final UserRepository userRepository;
+    private final DisplayNameService displayNameService;
+
+    public SecurityConfiguration(UserRepository userRepository, DisplayNameService displayNameService) {
+        this.userRepository = userRepository;
+        this.displayNameService = displayNameService;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // Delegating the responsibility of general configurations
-        // of http security to the super class. It's configuring
-        // the followings: Vaadin's CSRF protection by ignoring
-        // framework's internal requests, default request cache,
-        // ignoring public views annotated with @AnonymousAllowed,
-        // restricting access to other views/endpoints, and enabling
-        // ViewAccessChecker authorization.
-        // You can add any possible extra configurations of your own
-        // here (the following is just an example):
-
-        // http.rememberMe().alwaysRemember(false);
-
-        // Configure your static resources with public access before calling
-        // super.configure(HttpSecurity) as it adds final anyRequest matcher
         http.authorizeHttpRequests().requestMatchers("/public/**").permitAll();
 
         super.configure(http);
 
-        // This is important to register your login view to the
-        // view access checker mechanism:
         setLoginView(http, LoginView.class);
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        // Customize your WebSecurity configuration.
         super.configure(web);
     }
 
-    /**
-     * Demo UserDetailsManager which only provides two hardcoded
-     * in memory users and their roles.
-     * NOTE: This shouldn't be used in real world applications.
-     */
     @Bean
     public UserDetailsManager userDetailsService() {
+        List<UserDetails> users = new ArrayList<>();
         UserDetails rico =
                 User.withUsername("vivar")
                         .password("{noop}Rico.33")
                         .roles("ADMIN", "USER")
                         .build();
-        UserDetails jan =
-                User.withUsername("grafj")
-                        .password("{noop}Jan.9")
+        users.add(rico);
+
+        Iterable<ApplicationUser> applicationUsers = userRepository.findAll();
+        List<UserDetails> databaseUsers = StreamSupport.stream(applicationUsers.spliterator(), false)
+                .map(applicationUser -> User.withUsername(applicationUser.getUserName())
+                        .password("{noop}" + applicationUser.getPassword())
                         .roles("USER")
-                        .build();
-        UserDetails ben =
-                User.withUsername("ebneb")
-                        .password("{noop}Ben.6")
-                        .roles("USER")
-                        .build();
-        UserDetails jannik =
-                User.withUsername("helmj")
-                        .password("{noop}Jannik.11")
-                        .roles("USER")
-                        .build();
-        UserDetails admin =
-                User.withUsername("zeihm")
-                        .password("{noop}wwi21A!")
-                        .roles("ADMIN")
-                        .build();
+                        .build())
+                .toList();
+
+        users.addAll(databaseUsers);
 
 
+        databaseUsers.forEach(userDetails -> {
+            String nickname = userRepository.findByUserName(userDetails.getUsername()).getNickname();
+            displayNameService.setDisplayName(userDetails, nickname);
+        });
 
-        return new InMemoryUserDetailsManager(rico, jan, ben, jannik, admin);
+        return new InMemoryUserDetailsManager(users);
     }
 }

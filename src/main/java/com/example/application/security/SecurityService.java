@@ -1,6 +1,7 @@
 package com.example.application.security;
 
 import com.example.application.model.ApplicationUser;
+import com.example.application.repository.UserRepository;
 import com.example.application.utils.UserUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
@@ -25,9 +26,11 @@ public class SecurityService implements ApplicationListener<InteractiveAuthentic
     private final UserDetailsManager userDetailsManager;
 
     private static final Set<String> loggedInUserIds = new HashSet<>();
+    private final UserRepository userRepository;
 
-    public SecurityService(UserDetailsManager userDetailsManager) {
+    public SecurityService(UserDetailsManager userDetailsManager, UserRepository userRepository) {
         this.userDetailsManager = userDetailsManager;
+        this.userRepository = userRepository;
     }
 
     public UserDetails getAuthenticatedUser() {
@@ -79,6 +82,8 @@ public class SecurityService implements ApplicationListener<InteractiveAuthentic
     }
 
     public void register(ApplicationUser applicationUser) {
+        userRepository.save(applicationUser);
+
         UserUtils.addUser(applicationUser);
         userDetailsManager.createUser(User
                 .withUsername(applicationUser.getUserName())

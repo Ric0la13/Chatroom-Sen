@@ -79,7 +79,7 @@ public class SignupView extends VerticalLayout {
 
         RouterLink toLogin = new RouterLink("Go to Login", LoginView.class);
 
-        add(new H1("Signup CRM"), verticalLayout, toLogin);
+        add(new H1("Signup to Chatroom"), verticalLayout, toLogin);
     }
 
     private void handleRegisterButton() {

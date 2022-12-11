@@ -21,7 +21,9 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -92,12 +94,17 @@ public class MainLayout extends AppLayout {
         if (property == null) return null;
         String profilePicturePath = property.formatted(userId);
 
+        File f = new File(profilePicturePath);
+
+        if (!f.exists()) {
+            return null;
+        }
+
         return new StreamResource(userId + ".png", () -> {
             try {
                 return new FileInputStream(profilePicturePath);
-            }
-            catch (Exception e) {
-                return null;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
         });
     }

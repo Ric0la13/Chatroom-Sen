@@ -8,7 +8,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.server.StreamResource;
 import org.springframework.core.env.Environment;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -104,12 +106,17 @@ public class Message extends Div {
         if (property == null) return null;
         String profilePicturePath = property.formatted(userId);
 
+        File f = new File(profilePicturePath);
+
+        if (!f.exists()) {
+            return null;
+        }
+
         return new StreamResource(userId + ".png", () -> {
             try {
                 return new FileInputStream(profilePicturePath);
-            }
-            catch (Exception e) {
-                return null;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
         });
     }

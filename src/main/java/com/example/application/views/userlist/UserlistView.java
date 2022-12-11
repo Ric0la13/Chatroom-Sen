@@ -16,7 +16,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 @PageTitle("Userlist")
@@ -105,12 +107,17 @@ public class UserlistView extends VerticalLayout {
         if (property == null) return null;
         String profilePicturePath = property.formatted(userId);
 
+        File f = new File(profilePicturePath);
+
+        if (!f.exists()) {
+            return null;
+        }
+
         return new StreamResource(userId + ".png", () -> {
             try {
                 return new FileInputStream(profilePicturePath);
-            }
-            catch (Exception e) {
-                return null;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
         });
     }

@@ -94,12 +94,23 @@ public class ProfileView extends VerticalLayout {
             InputStream inputStream = new ByteArrayInputStream(original);
             BufferedImage originalImage = ImageIO.read(inputStream);
 
-            BufferedImage resizedImage = Scalr.resize(originalImage, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
-                    64, 64, Scalr.OP_ANTIALIAS);
+            int height = originalImage.getHeight();
+            int width = originalImage.getWidth();
+            Scalr.Mode mode = (height < width) ? Scalr.Mode.FIT_TO_HEIGHT: Scalr.Mode.FIT_TO_WIDTH;
+
+            int size = 64;
+            BufferedImage resizedImage = Scalr.resize(originalImage, Scalr.Method.AUTOMATIC, mode,
+                    size, size, Scalr.OP_ANTIALIAS);
+
+            BufferedImage cropedImage = Scalr.crop(resizedImage, size, size);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            ImageIO.write(resizedImage, "png", byteArrayOutputStream);
+            ImageIO.write(cropedImage, "png", byteArrayOutputStream);
+
+            originalImage.flush();
+            resizedImage.flush();
+            cropedImage.flush();
 
             byte[] resized = byteArrayOutputStream.toByteArray();
             out.write(resized);

@@ -23,6 +23,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import elemental.json.Json;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.core.env.Environment;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,8 +39,11 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
     private final VerticalLayout chatContent;
 
     private final boolean isAnonymous;
+    private final Environment environment;
 
-    public ChatView(ChatService chatService, SecurityService securityService) {
+    public ChatView(Environment environment,
+                    ChatService chatService, SecurityService securityService) {
+        this.environment = environment;
         this.chatService = chatService;
 
         isAnonymous = securityService.getAuthenticatedUser() == null;
@@ -119,12 +123,14 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
         show.setPosition(Notification.Position.MIDDLE);
     }
 
-    private static String saveImageOnServer(MemoryBuffer memoryBuffer) {
+    private String saveImageOnServer(MemoryBuffer memoryBuffer) {
 
         String extension = FilenameUtils.getExtension(memoryBuffer.getFileName());
-
         String name = System.currentTimeMillis() + "." + extension;
-        String fileName = "src/main/webapp/VAADIN/chatpictures/" + name;
+
+        String property = environment.getProperty("image.message");
+        assert property != null;
+        String fileName = property.formatted(name);
         try (FileOutputStream out = new FileOutputStream(fileName)) {
             byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
             out.write(bytes);

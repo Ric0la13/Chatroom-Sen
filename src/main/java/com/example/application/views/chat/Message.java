@@ -25,7 +25,7 @@ public class Message extends Div {
 
         Component messageBody;
         if (isImageMessage) {
-            messageBody = createChatImage(input);
+            messageBody = createChatImage(environment, input);
         } else {
             messageBody = new Span(input);
         }
@@ -51,7 +51,7 @@ public class Message extends Div {
 
         Component messageBody;
         if (isImageMessage) {
-            messageBody = createChatImage(input);
+            messageBody = createChatImage(environment, input);
         } else {
             messageBody = new Span(input);
         }
@@ -70,8 +70,10 @@ public class Message extends Div {
         addClassName("picandmess");
     }
 
-    private Image createChatImage(String input) {
-        Image messageBody = new Image("VAADIN/chatpictures/" + input, "imagine");
+    private Image createChatImage(Environment environment, String name) {
+        StreamResource imageResource = getChatImageResource(environment, name);
+
+        Image messageBody = new Image(imageResource, "imagine");
         messageBody.getElement().setAttribute("onLoad", """
                 parent = event.target.parentElement.parentElement.parentElement.parentElement;
                 parent.scrollTo(0, parent.scrollHeight);
@@ -87,7 +89,7 @@ public class Message extends Div {
     }
 
     private static Image getProfilePicture(Environment environment, String userId) {
-        StreamResource imageResource = getStreamResource(environment, userId);
+        StreamResource imageResource = getProfileResource(environment, userId);
 
         Image profilePicture;
         if (imageResource == null) {
@@ -101,7 +103,7 @@ public class Message extends Div {
         return profilePicture;
     }
 
-    private static StreamResource getStreamResource(Environment environment, String userId) {
+    private static StreamResource getProfileResource(Environment environment, String userId) {
         String property = environment.getProperty("image.profile");
         if (property == null) return null;
         String profilePicturePath = property.formatted(userId);
@@ -115,6 +117,26 @@ public class Message extends Div {
         return new StreamResource(userId + ".png", () -> {
             try {
                 return new FileInputStream(profilePicturePath);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private static StreamResource getChatImageResource(Environment environment, String name) {
+        String property = environment.getProperty("image.message");
+        if (property == null) return null;
+        String chatImagePath = property.formatted(name);
+
+        File f = new File(chatImagePath);
+
+        if (!f.exists()) {
+            return null;
+        }
+
+        return new StreamResource(name, () -> {
+            try {
+                return new FileInputStream(chatImagePath);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }

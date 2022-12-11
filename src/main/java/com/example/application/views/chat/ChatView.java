@@ -130,7 +130,7 @@ public class ChatView extends VerticalLayout implements BeforeLeaveObserver {
 
         String property = environment.getProperty("image.message");
         assert property != null;
-        String fileName = property.formatted(name);
+        String fileName = property  + "/" + name;
         try (FileOutputStream out = new FileOutputStream(fileName)) {
             byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
             out.write(bytes);

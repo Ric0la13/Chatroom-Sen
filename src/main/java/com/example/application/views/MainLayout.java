@@ -98,7 +98,7 @@ public class MainLayout extends AppLayout {
     private StreamResource getStreamResource(String userId) {
         String property = environment.getProperty("image.profile");
         if (property == null) return null;
-        String profilePicturePath = property.formatted(userId);
+        String profilePicturePath = property + "/" + userId + ".png";
 
         File f = new File(profilePicturePath);
 

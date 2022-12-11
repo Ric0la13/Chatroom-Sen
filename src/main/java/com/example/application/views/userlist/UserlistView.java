@@ -105,7 +105,7 @@ public class UserlistView extends VerticalLayout {
     private StreamResource getProfileResource(String userId) {
         String property = environment.getProperty("image.profile");
         if (property == null) return null;
-        String profilePicturePath = property.formatted(userId);
+        String profilePicturePath = property + "/" + userId + ".png";
 
         File f = new File(profilePicturePath);
 

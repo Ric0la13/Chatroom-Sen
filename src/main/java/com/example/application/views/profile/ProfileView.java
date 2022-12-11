@@ -75,10 +75,10 @@ public class ProfileView extends VerticalLayout {
 
         dropEnabledUpload.setAcceptedFileTypes("image/png", ".png", "image/jpeg", ".jpg", ".jpeg");
 
-        String username = authenticatedUser.getUsername();
+        String userId = authenticatedUser.getUsername();
         String property = environment.getProperty("image.profile");
         assert property != null;
-        String fileName = property.formatted(username);
+        String fileName = property + "/" + userId + ".png";
 
         dropEnabledUpload.addSucceededListener(event -> changeProfilePicture(memoryBuffer, fileName));
         dropEnabledUpload.addFileRejectedListener(event -> showErrorMessage("file needs to be a png-file"));

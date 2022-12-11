@@ -106,7 +106,7 @@ public class Message extends Div {
     private static StreamResource getProfileResource(Environment environment, String userId) {
         String property = environment.getProperty("image.profile");
         if (property == null) return null;
-        String profilePicturePath = property.formatted(userId);
+        String profilePicturePath = property + "/" + userId + ".png";
 
         File f = new File(profilePicturePath);
 
@@ -126,7 +126,7 @@ public class Message extends Div {
     private static StreamResource getChatImageResource(Environment environment, String name) {
         String property = environment.getProperty("image.message");
         if (property == null) return null;
-        String chatImagePath = property.formatted(name);
+        String chatImagePath = property + "/" + name;
 
         File f = new File(chatImagePath);
 

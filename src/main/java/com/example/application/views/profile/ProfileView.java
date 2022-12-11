@@ -111,6 +111,7 @@ public class ProfileView extends VerticalLayout {
         String nickname = name.getValue();
         if (nickname.isBlank()) {
             Notification.show("Your display-name may not be blank");
+            return;
         }
         displayNameService.setDisplayName(authenticatedUser, nickname);
 

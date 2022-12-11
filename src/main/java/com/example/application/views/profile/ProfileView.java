@@ -73,7 +73,7 @@ public class ProfileView extends VerticalLayout {
         dropEnabledUpload.setMaxFileSize(50_000_000);
         dropEnabledUpload.setUploadButton(uploadButton);
 
-        dropEnabledUpload.setAcceptedFileTypes("image/png", ".png");
+        dropEnabledUpload.setAcceptedFileTypes("image/png", ".png", "image/jpeg", ".jpg", ".jpeg");
 
         String username = authenticatedUser.getUsername();
         String property = environment.getProperty("image.profile");

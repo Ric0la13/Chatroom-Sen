@@ -16,12 +16,15 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.PermitAll;
 import org.apache.commons.io.IOUtils;
+import org.imgscalr.Scalr;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.annotation.security.PermitAll;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 
 @PageTitle("My Profile")
 @PermitAll
@@ -31,11 +34,13 @@ public class ProfileView extends VerticalLayout {
     private final TextField name;
     private final DisplayNameService displayNameService;
     private final UserRepository userRepository;
+    private final Environment environment;
 
     public ProfileView(SecurityService securityService, DisplayNameService displayNameService,
-                       UserRepository userRepository) {
+                       UserRepository userRepository, Environment environment) {
         this.displayNameService = displayNameService;
         this.userRepository = userRepository;
+        this.environment = environment;
 
         UserDetails authenticatedUser = securityService.getAuthenticatedUser();
 
@@ -70,7 +75,9 @@ public class ProfileView extends VerticalLayout {
         dropEnabledUpload.setAcceptedFileTypes("image/png", ".png");
 
         String username = authenticatedUser.getUsername();
-        String fileName = "src/main/webapp/VAADIN/profilepictures/" + username + ".png";
+        String property = environment.getProperty("image.profile");
+        assert property != null;
+        String fileName = property.formatted(username);
 
         dropEnabledUpload.addSucceededListener(event -> changeProfilePicture(memoryBuffer, fileName));
         dropEnabledUpload.addFileRejectedListener(event -> showErrorMessage("file needs to be a png-file"));
@@ -80,8 +87,21 @@ public class ProfileView extends VerticalLayout {
 
     private static void changeProfilePicture(MemoryBuffer memoryBuffer, String fileName) {
         try (FileOutputStream out = new FileOutputStream(fileName)) {
-            byte[] bytes = IOUtils.toByteArray(memoryBuffer.getInputStream());
-            out.write(bytes);
+
+            byte[] original = IOUtils.toByteArray(memoryBuffer.getInputStream());
+
+            InputStream inputStream = new ByteArrayInputStream(original);
+            BufferedImage originalImage = ImageIO.read(inputStream);
+
+            BufferedImage resizedImage = Scalr.resize(originalImage, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC,
+                    64, 64, Scalr.OP_ANTIALIAS);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+            ImageIO.write(resizedImage, "png", byteArrayOutputStream);
+
+            byte[] resized = byteArrayOutputStream.toByteArray();
+            out.write(resized);
         } catch (IOException e) {
             Notification.show("image can not be written to server");
         }

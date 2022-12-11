@@ -10,10 +10,13 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
+import jakarta.annotation.security.PermitAll;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.annotation.security.PermitAll;
+import java.io.FileInputStream;
 import java.util.List;
 
 @PageTitle("Userlist")
@@ -22,8 +25,12 @@ import java.util.List;
 public class UserlistView extends VerticalLayout {
 
     private final List<UserDetails> loggedInUsers;
+    private final Environment environment;
 
-    public UserlistView(SecurityService securityService, DisplayNameService displayNameService) {
+    public UserlistView(Environment environment,
+                        SecurityService securityService,
+                        DisplayNameService displayNameService) {
+        this.environment = environment;
 
         List<UserDetails> allUsers = securityService.getAllUsers();
         loggedInUsers = securityService.getLoggedInUsers();
@@ -32,7 +39,7 @@ public class UserlistView extends VerticalLayout {
         userGrid.setSizeFull();
         userGrid.setItems(allUsers);
 
-        userGrid.addComponentColumn(UserlistView::getProfilePicture)
+        userGrid.addComponentColumn(this::getProfilePicture)
                 .setWidth("5rem").setFlexGrow(0);
         userGrid.addColumn(UserDetails::getUsername)
                 .setHeader("Username");
@@ -77,15 +84,34 @@ public class UserlistView extends VerticalLayout {
         return roleContainer;
     }
 
-    private static Image getProfilePicture(UserDetails userDetails) {
+    private Image getProfilePicture(UserDetails userDetails) {
         String userId = userDetails.getUsername();
-        String profilePicturePath = "VAADIN/profilepictures/" + userId + ".png";
+        StreamResource profileResource = getProfileResource(userId);
 
-        Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
-        profilePicture.getElement().setAttribute("onError", "{"
-                + "event.target.src = \"images/default-avatar.png\"}");
+        Image profilePicture;
+        if (profileResource == null) {
+            profilePicture = new Image("public/images/default-avatar.png", "Profile Picture from " + userId);
+        } else {
+            profilePicture = new Image(profileResource, "Profile Picture from " + userId);
+            profilePicture.getElement().setAttribute("onError", "{"
+                    + "event.target.src = \"public/images/default-avatar.png\"}");
+        }
         profilePicture.addClassName("profile");
         return profilePicture;
     }
 
+    private StreamResource getProfileResource(String userId) {
+        String property = environment.getProperty("image.profile");
+        if (property == null) return null;
+        String profilePicturePath = property.formatted(userId);
+
+        return new StreamResource(userId + ".png", () -> {
+            try {
+                return new FileInputStream(profilePicturePath);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        });
+    }
 }

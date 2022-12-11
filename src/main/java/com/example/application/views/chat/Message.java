@@ -5,7 +5,10 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.server.StreamResource;
+import org.springframework.core.env.Environment;
 
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,7 +17,7 @@ public class Message extends Div {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd. MMM yyyy HH:mm");
 
-    public Message(String userId, String input, Date date, boolean isAnonymous, boolean isImageMessage) {
+    public Message(Environment environment, String userId, String input, Date date, boolean isAnonymous, boolean isImageMessage) {
 
         Span nameSpan = new Span(userId);
 
@@ -28,7 +31,7 @@ public class Message extends Div {
 
         Span dateTimeSpan = getDateTimeSpan(date);
 
-        Image profilePicture = isAnonymous ? getAnonymousProfilePicture() : getProfilePicture(userId);
+        Image profilePicture = isAnonymous ? getAnonymousProfilePicture() : getProfilePicture(environment, userId);
 
         nameSpan.addClassName("user-id");
 
@@ -40,7 +43,7 @@ public class Message extends Div {
         addClassName("picandmess");
     }
 
-    public Message(String userId, String displayName, String input, Date date, boolean isImageMessage) {
+    public Message(Environment environment, String userId, String displayName, String input, Date date, boolean isImageMessage) {
 
         Span nameSpan = new Span(displayName);
 
@@ -53,7 +56,7 @@ public class Message extends Div {
         ((HasStyle) messageBody).addClassName("body");
 
         Span dateTimeSpan = getDateTimeSpan(date);
-        Image profilePicture = getProfilePicture(userId);
+        Image profilePicture = getProfilePicture(environment, userId);
 
         nameSpan.addClassName("user-id");
 
@@ -81,14 +84,34 @@ public class Message extends Div {
         return dateTimeSpan;
     }
 
-    private static Image getProfilePicture(String userId) {
-        String profilePicturePath = "VAADIN/profilepictures/" + userId + ".png";
+    private static Image getProfilePicture(Environment environment, String userId) {
+        StreamResource imageResource = getStreamResource(environment, userId);
 
-        Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
-        profilePicture.getElement().setAttribute("onError", "{"
-                + "event.target.src = \"public/images/default-avatar.png\"}");
+        Image profilePicture;
+        if (imageResource == null) {
+            profilePicture = new Image("public/images/default-avatar.png", "Profile Picture from " + userId);
+        } else {
+            profilePicture = new Image(imageResource, "Profile Picture from " + userId);
+            profilePicture.getElement().setAttribute("onError", "{"
+                    + "event.target.src = \"public/images/default-avatar.png\"}");
+        }
         profilePicture.addClassName("profile");
         return profilePicture;
+    }
+
+    private static StreamResource getStreamResource(Environment environment, String userId) {
+        String property = environment.getProperty("image.profile");
+        if (property == null) return null;
+        String profilePicturePath = property.formatted(userId);
+
+        return new StreamResource(userId + ".png", () -> {
+            try {
+                return new FileInputStream(profilePicturePath);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        });
     }
 
     private static Image getAnonymousProfilePicture() {

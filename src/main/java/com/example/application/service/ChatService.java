@@ -7,6 +7,7 @@ import com.example.application.views.chat.ChatView;
 import com.example.application.views.chat.Message;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +26,11 @@ public class ChatService {
     private final SecurityService securityService;
     private final DisplayNameService displayNameService;
     private final MessageRepository messageRepository;
+    private final Environment environment;
 
-    public ChatService(MessageRepository messageRepository,
+    public ChatService(Environment environment, MessageRepository messageRepository,
                        SecurityService securityService, DisplayNameService displayNameService) {
+        this.environment = environment;
         this.messageRepository = messageRepository;
         this.securityService = securityService;
         this.displayNameService = displayNameService;
@@ -166,22 +169,28 @@ public class ChatService {
 
     private Message createMessage(String value, UserDetails sendingUser, Date date) {
         return displayNameService.getDisplayName(sendingUser)
-                .map(displayName -> new Message(sendingUser.getUsername(), displayName, value, date, false))
-                .orElseGet(() -> new Message(sendingUser.getUsername(), value, date, false, false));
+                .map(displayName -> new Message(environment,
+                        sendingUser.getUsername(), displayName, value, date, false))
+                .orElseGet(() -> new Message(environment,
+                        sendingUser.getUsername(), value, date, false, false));
     }
 
     private Message createImageMessage(String fileName, UserDetails sendingUser, Date date) {
         return displayNameService.getDisplayName(sendingUser)
-                .map(displayName -> new Message(sendingUser.getUsername(), displayName, fileName, date, true))
-                .orElseGet(() -> new Message(sendingUser.getUsername(), fileName, date, false, true));
+                .map(displayName -> new Message(environment,
+                        sendingUser.getUsername(), displayName, fileName, date, true))
+                .orElseGet(() -> new Message(environment,
+                        sendingUser.getUsername(), fileName, date, false, true));
     }
 
     private Message createMessage(String value, UI ui, Date date) {
-        return new Message("Anonymous " + ui.getUIId(), value, date, true, false);
+        return new Message(environment,
+                "Anonymous " + ui.getUIId(), value, date, true, false);
     }
 
     private Message createImageMessage(String value, UI ui, Date date) {
-        return new Message("Anonymous " + ui.getUIId(), value, date, true, true);
+        return new Message(environment,
+                "Anonymous " + ui.getUIId(), value, date, true, true);
     }
 
     public void removeUI(UI ui) {
@@ -198,7 +207,8 @@ public class ChatService {
     private Message createMessage(MessageModel model) {
         Instant timestamp = model.getTimestamp();
         Date date = Date.from(timestamp);
-        Message message = new Message(model.getUserId(), model.getTitle(), model.getBody(), date, model.isImage());
+        Message message = new Message(environment,
+                model.getUserId(), model.getTitle(), model.getBody(), date, model.isImage());
         if (securityService.getAuthenticatedUser().getUsername().equals(model.getUserId())) {
             message.addClassName("own");
         }

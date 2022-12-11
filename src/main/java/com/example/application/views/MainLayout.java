@@ -16,8 +16,12 @@ import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.io.FileInputStream;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -25,10 +29,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class MainLayout extends AppLayout {
 
     private final SecurityService securityService;
+    private final Environment environment;
     private H2 viewTitle;
 
-    public MainLayout(SecurityService securityService) {
+    public MainLayout(SecurityService securityService, Environment environment) {
         this.securityService = securityService;
+        this.environment = environment;
 
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
@@ -63,15 +69,37 @@ public class MainLayout extends AppLayout {
         }
     }
 
-    private static Image getProfilePicture(UserDetails userDetails) {
+    private Image getProfilePicture(UserDetails userDetails) {
         String userId = userDetails.getUsername();
-        String profilePicturePath = "VAADIN/profilepictures/" + userId + ".png";
+        StreamResource imageResource = getStreamResource(userId);
 
-        Image profilePicture = new Image(profilePicturePath, "Profile Picture from " + userId);
-        profilePicture.getElement().setAttribute("onError", "{"
-                + "event.target.src = \"images/default-avatar.png\"}");
+        Image profilePicture;
+
+        if (imageResource == null) {
+            profilePicture = new Image("public/images/default-avatar.png", "Profile Picture from " + userId);
+        } else {
+            profilePicture = new Image(imageResource, "Profile Picture from " + userId);
+            profilePicture.getElement().setAttribute("onError", "{"
+                    + "event.target.src = \"public/images/default-avatar.png\"}");
+        }
+
         profilePicture.addClassNames("profile", "small");
         return profilePicture;
+    }
+
+    private StreamResource getStreamResource(String userId) {
+        String property = environment.getProperty("image.profile");
+        if (property == null) return null;
+        String profilePicturePath = property.formatted(userId);
+
+        return new StreamResource(userId + ".png", () -> {
+            try {
+                return new FileInputStream(profilePicturePath);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        });
     }
 
     private void addDrawerContent() {

@@ -5,6 +5,7 @@ import com.example.application.security.SecurityService;
 import com.example.application.service.DisplayNameService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
@@ -102,6 +103,8 @@ public class ProfileView extends VerticalLayout {
 
             byte[] resized = byteArrayOutputStream.toByteArray();
             out.write(resized);
+            MainLayout mainLayout = UI.getCurrent().getChildren().map(e -> (MainLayout) e).toList().get(0);
+            mainLayout.updateProfilePicture();
         } catch (IOException e) {
             Notification.show("image can not be written to server");
         }

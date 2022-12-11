@@ -34,9 +34,14 @@ public class MainLayout extends AppLayout {
     private final Environment environment;
     private H2 viewTitle;
 
+    private final Div info;
+
     public MainLayout(SecurityService securityService, Environment environment) {
         this.securityService = securityService;
         this.environment = environment;
+
+        info = new Div();
+        info.setId("user-info");
 
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
@@ -60,8 +65,9 @@ public class MainLayout extends AppLayout {
                     securityService.logout());
             logout.setId("logout-button");
 
-            addToNavbar(true, toggle, viewTitle,
-                    userName, getProfilePicture(authenticatedUser), logout);
+            info.add(userName, getProfilePicture(authenticatedUser));
+
+            addToNavbar(true, toggle, viewTitle, info, logout);
         } else {
             Button login = new Button("Login", click ->
                     UI.getCurrent().navigate(LoginView.class));
@@ -150,5 +156,13 @@ public class MainLayout extends AppLayout {
     private String getCurrentPageTitle() {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
+    }
+
+    public void updateProfilePicture() {
+        UserDetails authenticatedUser = securityService.getAuthenticatedUser();
+        Span userName = new Span(authenticatedUser.getUsername());
+        userName.setId("user-id-header");
+        info.removeAll();
+        info.add(userName, getProfilePicture(authenticatedUser));
     }
 }
